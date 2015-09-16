@@ -74,7 +74,7 @@ public class HockeyAppAndroid : MonoBehaviour {
 		if(exceptionLogging == true)
 		{
 			System.AppDomain.CurrentDomain.UnhandledException += OnHandleUnresolvedException;
-			Application.logMessageReceived += OnHandleLogCallback;
+			Application.RegisterLogCallback(OnHandleLogCallback);
 		}
 		#endif
 	}
@@ -84,7 +84,7 @@ public class HockeyAppAndroid : MonoBehaviour {
 		if(exceptionLogging == true)
 		{
 			System.AppDomain.CurrentDomain.UnhandledException -= OnHandleUnresolvedException;
-			Application.logMessageReceived -= OnHandleLogCallback;
+			Application.RegisterLogCallback(null);
 		}
 		#endif
 	}
@@ -336,22 +336,22 @@ public class HockeyAppAndroid : MonoBehaviour {
 			WWWForm postForm = CreateForm(log);
 			string lContent = postForm.headers["Content-Type"].ToString();
 			lContent = lContent.Replace("\"", "");
-			Dictionary<string,string> headers = new Dictionary<string,string>();
+            Hashtable headers = new Hashtable();
 			headers.Add("Content-Type", lContent);
-			WWW www = new WWW(url, postForm.data, headers);
-			yield return www;
+            WWW www = new WWW(url, postForm.data, headers);
+            yield return www;
 
-			if (String.IsNullOrEmpty (www.error)) 
-			{
-				try 
-				{
-					File.Delete (log);
-				} 
-				catch (Exception e) 
-				{
-					if (Debug.isDebugBuild) Debug.Log ("Failed to delete exception log: " + e);
-				}
-			}
+            if (String.IsNullOrEmpty(www.error))
+            {
+                try
+                {
+                    File.Delete(log);
+                }
+                catch (Exception e)
+                {
+                    if (Debug.isDebugBuild) Debug.Log("Failed to delete exception log: " + e);
+                }
+ 			}
 		}
 	}
 
